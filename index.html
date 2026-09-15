@@ -147,6 +147,16 @@
   .food-btn .n{font-size:10.5px;}
   #adminInfo{font-family:var(--mono);font-size:11.5px;background:var(--panel-2);border-radius:8px;padding:10px;margin-bottom:12px;white-space:pre-wrap;word-break:break-word;}
   #adminRawReply{font-family:var(--mono);font-size:11px;white-space:pre-wrap;word-break:break-word;margin-top:8px;max-height:120px;overflow-y:auto;background:var(--panel-2);border-radius:8px;padding:8px;}
+
+  /* [hidden] must win over any display:flex/block set on the same element
+     by an id/class rule above — an id selector otherwise beats the plain
+     [hidden] attribute selector on specificity alone, regardless of CSS
+     order, which would make the secret admin overlay show up immediately
+     on page load instead of staying hidden. Also fixes the same pre-
+     existing issue on the Bluetooth status pill and the Google task list. */
+  #adminGateOverlay[hidden],
+  .device-pill[hidden],
+  .task-list[hidden]{display:none;}
 </style>
 </head>
 <body>
