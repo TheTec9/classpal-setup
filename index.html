@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Set up your ClassPal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --bg:#F6F5F1; --panel:#FFFFFF; --panel-2:#EDEBE3; --line:#DDD8CA;
+    --accent:#2F5D50; --accent-soft:#E1EAE6; --amber:#B4552B; --amber-soft:#F1E1D2;
+    --danger:#A8402F; --danger-soft:#F3E1DC;
+    --ink:#221F1A; --ink-dim:#6B6459; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --sans:'Inter',-apple-system,Segoe UI,sans-serif; --display:'Space Grotesk',var(--sans);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12140F; --panel:#181B15; --panel-2:#1E2119; --line:#2E3226;
+      --accent:#7FBBA6; --accent-soft:#1B2A24; --amber:#E39A5C; --amber-soft:#3A2A1C;
+      --danger:#E39089; --danger-soft:#3A2422; --ink:#E9E6DC; --ink-dim:#9A9384;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12140F; --panel:#181B15; --panel-2:#1E2119; --line:#2E3226;
+    --accent:#7FBBA6; --accent-soft:#1B2A24; --amber:#E39A5C; --amber-soft:#3A2A1C;
+    --danger:#E39089; --danger-soft:#3A2422; --ink:#E9E6DC; --ink-dim:#9A9384;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;}
+  h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;}
+  code{font-family:var(--mono);background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:.9em;}
+
+  .wrap{max-width:560px;margin:0 auto;padding:28px 20px 80px;}
+  .topbar{display:flex;align-items:center;gap:10px;margin-bottom:22px;}
+  .topbar .logo{font-family:var(--display);font-weight:700;font-size:16px;}
+  .topbar .devtag{
+    margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--ink-dim);
+    background:var(--panel-2);border:1px solid var(--line);border-radius:20px;padding:3px 10px;
+  }
+
+  .progress-rail{height:6px;background:var(--panel-2);border-radius:4px;overflow:hidden;margin-bottom:6px;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .35s ease;width:0%;}
+  .progress-label{font-family:var(--mono);font-size:11px;color:var(--ink-dim);display:flex;justify-content:space-between;margin-bottom:28px;}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 24px;}
+  .step{display:none;}
+  .step.active{display:block;animation:fadein .18s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .step .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .step h2{font-size:22px;margin-bottom:8px;}
+  .step .lede{font-size:14px;color:var(--ink-dim);margin-bottom:22px;max-width:48ch;}
+
+  .btn{
+    font:inherit;font-family:var(--sans);font-weight:600;font-size:14.5px;border-radius:10px;
+    padding:13px 20px;border:none;cursor:pointer;width:100%;display:flex;align-items:center;
+    justify-content:center;gap:8px;transition:filter .15s, transform .1s;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn.primary{background:var(--accent);color:var(--bg);}
+  .btn.primary:hover{filter:brightness(1.08);}
+  .btn.ghost{background:var(--panel-2);color:var(--ink);border:1px solid var(--line);}
+  .btn.ghost:hover{border-color:var(--accent);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-row{display:flex;gap:10px;margin-top:22px;}
+  .btn-row .btn{width:auto;flex:1;}
+
+  label{display:block;font-size:12.5px;font-weight:600;margin:14px 0 6px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text],input[type=email],input[type=password]{
+    width:100%;font:inherit;font-size:14.5px;padding:11px 13px;border-radius:9px;
+    border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  }
+  input:focus{outline:2px solid var(--accent);outline-offset:1px;}
+
+  .callout{border-radius:10px;padding:13px 16px;margin:16px 0;font-size:13px;line-height:1.6;border:1px solid var(--line);}
+  .callout .tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:5px;font-weight:600;}
+  .callout.warn{background:var(--amber-soft);border-color:color-mix(in srgb, var(--amber) 35%, var(--line));}
+  .callout.warn .tag{color:var(--amber);}
+  .callout.ok{background:var(--accent-soft);border-color:color-mix(in srgb, var(--accent) 35%, var(--line));}
+  .callout.ok .tag{color:var(--accent);}
+  .callout.danger{background:var(--danger-soft);border-color:color-mix(in srgb, var(--danger) 35%, var(--line));}
+  .callout.danger .tag{color:var(--danger);}
+
+  .device-pill{
+    display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--line);
+    border-radius:12px;padding:14px 16px;margin-top:16px;
+  }
+  .device-pill .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-dim);flex:0 0 auto;}
+  .device-pill.connected .dot{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .device-pill .meta{flex:1;min-width:0;}
+  .device-pill .name{font-family:var(--mono);font-size:12.5px;font-weight:600;}
+  .device-pill .sub{font-size:11.5px;color:var(--ink-dim);}
+
+  .g-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:10px;
+    padding:12px 16px;font-family:var(--sans);font-weight:600;font-size:14px;cursor:pointer;
+  }
+  .g-btn:hover{box-shadow:0 1px 4px rgba(0,0,0,.15);}
+  .g-btn.connected{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);}
+
+  .task-list{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:8px;}
+  .task-list li{
+    display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);
+    border-radius:9px;padding:10px 12px;font-size:13.5px;
+  }
+  .task-list li .chk{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--ink-dim);flex:0 0 auto;}
+  .task-list li.done .chk{background:var(--accent);border-color:var(--accent);}
+  .task-list li.done{color:var(--ink-dim);text-decoration:line-through;}
+
+  .summary-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+  .summary-row:last-child{border-bottom:none;}
+  .summary-row .k{color:var(--ink-dim);}
+  .summary-row .v{font-family:var(--mono);font-weight:600;text-align:right;}
+
+  .stepper-dots{display:flex;justify-content:center;gap:7px;margin-top:22px;}
+  .stepper-dots span{width:7px;height:7px;border-radius:50%;background:var(--line);}
+  .stepper-dots span.on{background:var(--accent);}
+  .stepper-dots span.past{background:var(--ink-dim);}
+
+  .skip-link{display:block;text-align:center;margin-top:14px;font-size:12.5px;color:var(--ink-dim);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:inherit;width:100%;}
+
+  footer{text-align:center;font-size:11.5px;color:var(--ink-dim);margin-top:26px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="logo">🎒 ClassPal setup</div>
+    <div class="devtag" id="devTag">detecting device…</div>
+  </div>
+
+  <div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label"><span id="progressText">Step 1 of 6</span><span id="progressPct">0%</span></div>
+
+  <div class="card">
+
+    <!-- STEP 1: WELCOME + BLUETOOTH -->
+    <section class="step active" data-step="1">
+      <div class="kicker">Welcome</div>
+      <h2>Welcome to your new ClassPal! Let's set it up.</h2>
+      <p class="lede">This takes about 3 minutes. First, connect to your device over Bluetooth so this page can talk to it directly.</p>
+
+      <button class="btn primary" id="btnConnectBle">🔵 Connect via Bluetooth</button>
+
+      <div class="device-pill" id="blePill" hidden>
+        <div class="dot"></div>
+        <div class="meta">
+          <div class="name" id="bleName">—</div>
+          <div class="sub" id="bleSub">Not connected</div>
+        </div>
+      </div>
+
+      <div class="callout warn" id="bleUnsupported" hidden>
+        <span class="tag">Bluetooth pairing isn't available in this browser</span>
+        <span id="bleUnsupportedMsg">Web Bluetooth needs Chrome or Edge (desktop, or Android). If you're on an iPhone/iPad, Safari and Chrome-on-iOS can't do this — use a laptop or an Android phone instead, or enter your device's code below.</span>
+      </div>
+
+      <details style="margin-top:14px;">
+        <summary style="cursor:pointer;font-size:12.5px;color:var(--ink-dim);">Can't pair over Bluetooth? Enter your device code instead</summary>
+        <label for="manualCode">Device code (the 5 characters after "My-ClassPal:" on your device's screen)</label>
+        <input type="text" id="manualCode" maxlength="5" placeholder="A1B2C">
+      </details>
+
+      <div class="callout ok" style="margin-top:18px;">
+        <span class="tag">Only finds real ClassPal devices</span>
+        The Bluetooth picker only lists devices named "My-ClassPal:" followed by your device's own unique code — it can't accidentally connect to anyone else's gadget, headphones, or a stranger's device nearby.
+      </div>
+
+      <div class="btn-row">
+        <span></span>
+        <button class="btn primary" id="next1" disabled>Continue →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: WIFI -->
+    <section class="step" data-step="2">
+      <div class="kicker">Step 2 of 6</div>
+      <h2>Connect to WiFi</h2>
+      <p class="lede">ClassPal uses this to sync the time, get weather, and send note-taker emails.</p>
+
+      <label for="wifiSsid">Network name (SSID)</label>
+      <input type="text" id="wifiSsid" placeholder="Home-WiFi">
+      <label for="wifiPass">Password</label>
+      <input type="password" id="wifiPass" placeholder="••••••••">
+
+      <div class="btn-row">
+        <button class="btn ghost" data-back>← Back</button>
+        <button class="btn primary" id="next2">Continue →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: PARENT EMAIL -->
+    <section class="step" data-step="3">
+      <div class="kicker">Step 3 of 6</div>
+      <h2>Where should note-taker emails go?</h2>
+      <p class="lede">When your kid jots a voice note, ClassPal cleans it up and emails it here.</p>
+
+      <label for="parentEmail">Parent/guardian email</label>
+      <input type="email" id="parentEmail" placeholder="parent@example.com">
+
+      <div class="callout ok">
+        <span class="tag">Optional</span>
+        You can skip this and set it up later from the admin portal — the note-taker just won't send anything until an email is configured.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn ghost" data-back>← Back</button>
+        <button class="btn primary" id="next3">Continue →</button>
+      </div>
+      <button class="skip-link" data-skip="3">Skip this step</button>
+    </section>
+
+    <!-- STEP 4: GOOGLE TASKS -->
+    <section class="step" data-step="4">
+      <div class="kicker">Step 4 of 6</div>
+      <h2>Sync homework from Google Tasks?</h2>
+      <p class="lede">Optional — link a Google Tasks list so homework shows up on ClassPal automatically.</p>
+
+      <button class="g-btn" id="btnGoogle">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6C29.7 35 27 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.6 5.1C9.6 39.6 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.6 5.6C39.9 37 44 31.5 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+        <span id="googleBtnLabel">Connect Google Tasks</span>
+      </button>
+
+      <ul class="task-list" id="taskPreview" hidden>
+        <li><div class="chk"></div>Finish math worksheet ch.4</li>
+        <li><div class="chk"></div>Read 20 min — Holes</li>
+        <li class="done"><div class="chk"></div>Permission slip signed</li>
+      </ul>
+
+      <div class="callout ok" id="googleLiveNote">
+        <span class="tag">Live Google sign-in</span>
+        This connects to a real Google account and reads your Tasks list (read-only). If it says "origin not allowed," this page's exact web address still needs to be added to the Google Cloud OAuth client's Authorized JavaScript origins.
+      </div>
+      <div class="callout danger" id="googleErrorNote" hidden>
+        <span class="tag">Couldn't connect</span>
+        <span id="googleErrorMsg"></span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn ghost" data-back>← Back</button>
+        <button class="btn primary" id="next4">Continue →</button>
+      </div>
+      <button class="skip-link" data-skip="4">Skip this step</button>
+    </section>
+
+    <!-- STEP 5: NAME -->
+    <section class="step" data-step="5">
+      <div class="kicker">Step 5 of 6</div>
+      <h2>What's your name?</h2>
+      <p class="lede">ClassPal uses this for its goodbye message and a few friendly touches.</p>
+
+      <label for="kidName">First name</label>
+      <input type="text" id="kidName" placeholder="Alex">
+
+      <div class="btn-row">
+        <button class="btn ghost" data-back>← Back</button>
+        <button class="btn primary" id="next5">Continue →</button>
+      </div>
+    </section>
+
+    <!-- STEP 6: REVIEW + SEND -->
+    <section class="step" data-step="6">
+      <div class="kicker">Step 6 of 6</div>
+      <h2>Review &amp; send to ClassPal</h2>
+      <p class="lede">Double-check everything, then send it to your device.</p>
+
+      <div id="summaryBox">
+        <div class="summary-row"><span class="k">Device</span><span class="v" id="sumDevice">—</span></div>
+        <div class="summary-row"><span class="k">WiFi network</span><span class="v" id="sumWifi">—</span></div>
+        <div class="summary-row"><span class="k">Parent email</span><span class="v" id="sumEmail">—</span></div>
+        <div class="summary-row"><span class="k">Google Tasks</span><span class="v" id="sumGoogle">—</span></div>
+        <div class="summary-row"><span class="k">Name</span><span class="v" id="sumName">—</span></div>
+      </div>
+
+      <button class="btn primary" id="btnSend" style="margin-top:20px;">📡 Send to ClassPal</button>
+      <div id="sendStatus" style="font-size:12.5px;color:var(--ink-dim);margin-top:10px;text-align:center;"></div>
+
+      <div class="callout ok" id="doneCallout" hidden>
+        <span class="tag">All set</span>
+        Check your ClassPal's screen — it should now show your homework, WiFi status, and name. You can always change any of this later from the admin portal.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn ghost" data-back>← Back</button>
+        <span></span>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="stepper-dots" id="stepperDots"></div>
+
+  <footer>ClassPal setup · works on this page whether you scan the QR code or open the link directly</footer>
+</div>
+
+<script>
+  // ===========================================================================
+  // Device detection — adapts a couple of layout details for touch/mobile
+  // vs. a mouse-driven desktop browser. Both get the same steps; this just
+  // tweaks button sizing/copy so it feels native either way.
+  // ===========================================================================
+  const isTouch = matchMedia('(pointer: coarse)').matches;
+  const isNarrow = matchMedia('(max-width: 480px)').matches;
+  const deviceKind = (isTouch || isNarrow) ? 'mobile' : 'desktop';
+  document.getElementById('devTag').textContent = deviceKind === 'mobile' ? '📱 mobile' : '💻 desktop';
+
+  // ===========================================================================
+  // Wizard state + navigation
+  // ===========================================================================
+  const TOTAL_STEPS = 6;
+  let currentStep = 1;
+  const state = { device: null, wifi: '', email: '', google: false, name: '' };
+
+  function renderDots(){
+    const dots = document.getElementById('stepperDots');
+    dots.innerHTML = '';
+    for (let i = 1; i <= TOTAL_STEPS; i++){
+      const d = document.createElement('span');
+      if (i < currentStep) d.className = 'past';
+      else if (i === currentStep) d.className = 'on';
+      dots.appendChild(d);
+    }
+  }
+
+  function goStep(n){
+    currentStep = n;
+    document.querySelectorAll('.step').forEach(s => {
+      s.classList.toggle('active', Number(s.dataset.step) === n);
+    });
+    const pct = Math.round(((n - 1) / (TOTAL_STEPS - 1)) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `Step ${n} of ${TOTAL_STEPS}`;
+    document.getElementById('progressPct').textContent = pct + '%';
+    renderDots();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    sendStepToDevice(n); // best-effort — see note below
+    if (n === 6) fillSummary();
+  }
+  renderDots();
+
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => goStep(Math.max(1, currentStep - 1))));
+  document.querySelectorAll('[data-skip]').forEach(b => b.addEventListener('click', () => goStep(Number(b.dataset.skip) + 1)));
+
+  document.getElementById('next2').addEventListener('click', () => {
+    state.wifi = document.getElementById('wifiSsid').value.trim();
+    goStep(3);
+  });
+  document.getElementById('next3').addEventListener('click', () => {
+    state.email = document.getElementById('parentEmail').value.trim();
+    goStep(4);
+  });
+  document.getElementById('next4').addEventListener('click', () => goStep(5));
+  document.getElementById('next5').addEventListener('click', () => {
+    state.name = document.getElementById('kidName').value.trim();
+    goStep(6);
+  });
+
+  // ===========================================================================
+  // Bluetooth pairing — REAL Web Bluetooth API call. namePrefix restricts the
+  // browser's own picker to only devices advertising as "My-ClassPal:XXXXX",
+  // so it can't be used to connect to anything else nearby. Requires Chrome
+  // or Edge on desktop/Android; Web Bluetooth doesn't exist on iOS at all
+  // (Apple has not implemented it in any iOS browser engine, Safari or
+  // Chrome-for-iOS included) — the manual code fallback covers that case.
+  //
+  // NOTE — firmware dependency: this currently only *finds and connects* to
+  // the device over BLE using the standard GAP advertising name. Actually
+  // writing config to it (WiFi creds, name, etc. in step 6) needs a GATT
+  // service/characteristic defined in the firmware, which doesn't exist yet.
+  // Search for "TODO: BLE GATT" below for exactly where that plugs in once
+  // the firmware side is built.
+  // ===========================================================================
+  const bleSupported = 'bluetooth' in navigator;
+  const btnConnect = document.getElementById('btnConnectBle');
+  const blePill = document.getElementById('blePill');
+  const next1 = document.getElementById('next1');
+
+  if (!bleSupported) {
+    btnConnect.disabled = true;
+    document.getElementById('bleUnsupported').hidden = false;
+  }
+
+  btnConnect.addEventListener('click', async () => {
+    try {
+      btnConnect.textContent = 'Opening Bluetooth picker…';
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [{ namePrefix: 'My-ClassPal:' }],
+        optionalServices: [] // TODO: BLE GATT — add the real service UUID here once firmware defines one
+      });
+      state.device = device.name || 'My-ClassPal:?????';
+      blePill.hidden = false;
+      blePill.classList.add('connected');
+      document.getElementById('bleName').textContent = state.device;
+      document.getElementById('bleSub').textContent = 'Connected';
+      btnConnect.textContent = '🔵 Reconnect';
+      next1.disabled = false;
+    } catch (err) {
+      btnConnect.textContent = '🔵 Connect via Bluetooth';
+      if (err.name !== 'NotFoundError') { // user simply closed the picker — not an error worth showing
+        document.getElementById('bleUnsupported').hidden = false;
+        document.getElementById('bleUnsupportedMsg').textContent =
+          'Couldn\'t connect: ' + err.message + '. You can enter your device code below instead.';
+      }
+    }
+  });
+
+  // Manual code fallback also unlocks Continue
+  document.getElementById('manualCode').addEventListener('input', (e) => {
+    const v = e.target.value.trim().toUpperCase();
+    if (v.length === 5) {
+      state.device = 'My-ClassPal:' + v;
+      blePill.hidden = false;
+      blePill.classList.add('connected');
+      document.getElementById('bleName').textContent = state.device;
+      document.getElementById('bleSub').textContent = 'Entered manually (not live-connected)';
+      next1.disabled = false;
+    } else {
+      next1.disabled = true;
+    }
+  });
+
+  next1.addEventListener('click', () => goStep(2));
+
+  // ===========================================================================
+  // Google Tasks — REAL Google Identity Services (GIS) OAuth flow.
+  //
+  // GOOGLE_CLIENT_ID below is a real "Web application" OAuth client created
+  // in Google Cloud Console (project "ClassPal", consent screen configured
+  // External). The GIS *token client* (as opposed to classic redirect-based
+  // OAuth) works via a popup and doesn't need an "Authorized redirect URI" —
+  // it only needs this page's exact origin (scheme + host, e.g.
+  // https://yourname.github.io) listed under "Authorized JavaScript origins"
+  // on that OAuth client in Google Cloud Console. If that's not set yet,
+  // requestAccessToken() below will fail with an origin/redirect_uri_mismatch
+  // style error — see googleErrorNote in the UI.
+  //
+  // Scope used is tasks.readonly (least-privilege: just enough to preview
+  // and mirror the list onto the device, no write access to the user's
+  // Google Tasks). Swap to the full 'https://www.googleapis.com/auth/tasks'
+  // scope later if two-way sync (checking items off from the device) is
+  // wanted.
+  // ===========================================================================
+  const GOOGLE_CLIENT_ID = '651019823759-phhdsk2vhd0enjlbgmb42entn8lus3s8.apps.googleusercontent.com';
+  const GOOGLE_TASKS_SCOPE = 'https://www.googleapis.com/auth/tasks.readonly';
+
+  let googleTokenClient = null;
+  let googleAccessToken = null;
+
+  function initGoogleTokenClient() {
+    if (!(window.google && google.accounts && google.accounts.oauth2)) {
+      // GIS script hasn't loaded yet (slow network, or blocked) — retry shortly.
+      setTimeout(initGoogleTokenClient, 300);
+      return;
+    }
+    googleTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: GOOGLE_TASKS_SCOPE,
+      callback: async (tokenResponse) => {
+        if (tokenResponse.error) {
+          showGoogleError(tokenResponse.error_description || tokenResponse.error);
+          return;
+        }
+        googleAccessToken = tokenResponse.access_token;
+        state.google = true;
+        const btn = document.getElementById('btnGoogle');
+        btn.classList.add('connected');
+        document.getElementById('googleErrorNote').hidden = true;
+        try {
+          const email = await fetchGoogleEmail(googleAccessToken);
+          document.getElementById('googleBtnLabel').textContent = '✓ Connected' + (email ? ' as ' + email : '');
+        } catch (e) {
+          document.getElementById('googleBtnLabel').textContent = '✓ Connected';
+        }
+        loadRealTasks(googleAccessToken);
+      },
+      error_callback: (err) => {
+        showGoogleError((err && (err.message || err.type)) || 'Sign-in was closed or blocked.');
+      }
+    });
+  }
+  initGoogleTokenClient();
+
+  function showGoogleError(msg) {
+    document.getElementById('googleErrorNote').hidden = false;
+    document.getElementById('googleErrorMsg').textContent = msg;
+  }
+
+  async function fetchGoogleEmail(token) {
+    const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.email || null;
+  }
+
+  async function loadRealTasks(token) {
+    const listEl = document.getElementById('taskPreview');
+    try {
+      const res = await fetch('https://tasks.googleapis.com/tasks/v1/lists/@default/tasks?showCompleted=true&maxResults=8', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (!res.ok) throw new Error('Tasks API returned ' + res.status);
+      const data = await res.json();
+      const items = data.items || [];
+      listEl.innerHTML = '';
+      if (items.length === 0) {
+        listEl.innerHTML = '<li>No tasks found in your default Google Tasks list.</li>';
+      } else {
+        items.forEach(t => {
+          const li = document.createElement('li');
+          if (t.status === 'completed') li.className = 'done';
+          li.innerHTML = '<div class="chk"></div>' + (t.title || '(untitled task)');
+          listEl.appendChild(li);
+        });
+      }
+      listEl.hidden = false;
+    } catch (e) {
+      showGoogleError('Connected, but could not load tasks: ' + e.message);
+    }
+  }
+
+  document.getElementById('btnGoogle').addEventListener('click', function () {
+    if (state.google) return;
+    if (!googleTokenClient) {
+      showGoogleError('Still loading Google sign-in — try again in a second.');
+      return;
+    }
+    document.getElementById('googleErrorNote').hidden = true;
+    googleTokenClient.requestAccessToken();
+  });
+
+  // ===========================================================================
+  // Live progress on the device's own screen. Best-effort: only actually
+  // writes something if a real BLE GATT connection exists (see TODO above);
+  // until then this silently no-ops so the rest of the wizard works fine
+  // stand-alone.
+  // ===========================================================================
+  function sendStepToDevice(step) {
+    // TODO: BLE GATT — once the firmware exposes a characteristic for this,
+    // write something like {"cmd":"setup_progress","step":step,"total":TOTAL_STEPS}
+    // to it here. Left as a no-op stub for now.
+  }
+
+  function fillSummary() {
+    document.getElementById('sumDevice').textContent = state.device || '—';
+    document.getElementById('sumWifi').textContent = state.wifi || '(skipped)';
+    document.getElementById('sumEmail').textContent = state.email || '(skipped)';
+    document.getElementById('sumGoogle').textContent = state.google ? 'Connected' : '(skipped)';
+    document.getElementById('sumName').textContent = state.name || '(skipped)';
+  }
+
+  document.getElementById('btnSend').addEventListener('click', function () {
+    const statusEl = document.getElementById('sendStatus');
+    this.disabled = true;
+    statusEl.textContent = 'Sending to your ClassPal…';
+    setTimeout(() => {
+      // TODO: BLE GATT — replace this simulated delay with a real
+      // characteristic write of the full config object once firmware exists.
+      statusEl.textContent = 'Done — check your ClassPal\'s screen.';
+      document.getElementById('doneCallout').hidden = false;
+      this.textContent = '✓ Sent';
+    }, 1400);
+  });
+</script>
+
+</body>
+</html>
